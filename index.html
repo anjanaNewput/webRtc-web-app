@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebRTC</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      body {
+        background-color: burlywood;
+      }
+      .video-block {
+        display: inline;
+        margin: 70px;
+      }
+      #self-view {
+        height: 300px;
+      }
+      button {
+        background-color: cornsilk;
+        padding: 10px 5px;
+        width: 100px;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+      <div style="margin: 70px;">
+        <div class="video-block"><video id="self-view" autoplay></video></div>
+        <div id="remote-view-container" class="video-block"></div>
+      </div>
+      <div style="float:left;">
+          <button id="leave-btn" onclick="callDisconnect();">leave</button>
+      </div>
+      <div id="room-id-container" style="float:right;">
+        <button id="call-btn" onclick="press();">Call</button>
+      </div>
+      <script type="text/javascript" src="app.js"></script>
+  </body>
+</html>
