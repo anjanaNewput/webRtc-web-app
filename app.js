@@ -45,6 +45,16 @@ function createPC(socketId, isOffer) {
     }
   }
 
+  pc.oniceconnectionstatechange = function(event) {
+    if (event.target.iceConnectionState === 'connected') {
+     createDataChannel(isOffer, event);
+    }
+  };
+
+  pc.ondatachannel = function(event) {
+    createDataChannel(isOffer, event);
+  };
+
   pc.onaddstream = function (event) {
     var element = document.createElement('video');
     element.style.height = '300px';
@@ -55,6 +65,36 @@ function createPC(socketId, isOffer) {
   };
 
   pc.addStream(localStream);
+  
+
+  function createDataChannel(isOffer, _event) {
+    if (pc.textDataChannel) {
+      return;
+    }
+    var dataChannel = null;
+    if(isOffer){
+      dataChannel = pc.createDataChannel("text");
+    }else{
+      dataChannel = _event.channel;
+    }
+
+    dataChannel.onerror = function (error) {
+      console.log("dataChannel.onerror", error);
+    };
+    dataChannel.onmessage = function (event) {
+      var content = document.getElementById('text-room-content');
+      content.innerHTML = content.innerHTML + '<p>' + socketId + ': ' + event.data + '</p>';
+    };
+    dataChannel.onopen = function () {
+      var textRoom = document.getElementById('text-room');
+      textRoom.style.display = 'block';
+    };
+    dataChannel.onclose = function () {
+      console.log("dataChannel.onclose");
+    };
+    pc.textDataChannel = dataChannel;
+  }
+
   return pc;
 }
 function exchange(data) {
@@ -108,4 +148,17 @@ function callDisconnect () {
 function press() {
     join('test');
     document.getElementById('call-btn').disabled = true;
+}
+function textRoomPress() {
+  var text = document.getElementById('text-room-input').value;
+  if (text == "") {
+    alert('Enter something');
+  } else {
+    document.getElementById('text-room-input').value = '';
+    
+    for (var key in pcPeers) {
+      var pc = pcPeers[key];
+      pc.textDataChannel.send(text);
+    }
+  }
 }
