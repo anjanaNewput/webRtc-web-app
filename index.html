@@ -3,45 +3,71 @@
   <head>
     <title>WebRTC</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <style>
       body {
         background-color: burlywood;
       }
       .video-block {
         display: inline;
-        margin: 70px;
+        margin: 70px 20px;
       }
       #self-view {
         height: 300px;
       }
-      button {
-        background-color: cornsilk;
-        padding: 10px 5px;
-        width: 100px;
-        border-radius: 5px;
-        font-size: 14px;
+      .chat-container {
+        padding: 5px 10px;
+        margin: 10px 0;
+      }
+      .chat-container p {
+        margin: 0;
+      } 
+      .in-coming-msg {
+        background-color: #ddd;;
+        border-radius: 3px;
+        padding: 5px;
+      }
+      .out-going-msg {
+        background-color: #f1f1f1;
+        border-radius: 3px;
+        padding: 5px;
+      }
+
+      /* Clear floats */
+      .container::after {
+          content: "";
+          clear: both;
+          display: table;
       }
     </style>
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
-      <div id="text-room" style="display: none">
-          <div id="text-room-content">
-            <h3>Text Room</h3>
+      <div id="text-room" style="display: none;" class="col-md-3">
+          <div id="text-room-content"></div>
+          <div class="col-md-10">
+              <input id="text-room-input" class="form-control">
+          <!-- </div> -->
+          <!-- <div class="col-md-2"> -->
+              <span class="btn btn-primary" onclick="textRoomPress();">Send</span>
           </div>
-          <input id="text-room-input">
-          <button onclick="textRoomPress();">Send</button>
       </div>
-      <div style="margin: 70px;">
+      <div class="col-md-9">
         <div class="video-block"><video id="self-view" autoplay></video></div>
         <div id="remote-view-container" class="video-block"></div>
       </div>
-      <div style="float:left;">
-          <button id="leave-btn" onclick="callDisconnect();">leave</button>
+      <div style="clear: both"></div>
+      <div>
+          <div style="float:left;">
+              <button id="leave-btn" class="btn btn-primary" onclick="callDisconnect();">leave</button>
+          </div>
+          <div style="float:right;">
+            <button id="call-btn" class="btn btn-primary" onclick="press();">Call</button>
+          </div>
       </div>
-      <div id="room-id-container" style="float:right;">
-        <button id="call-btn" onclick="press();">Call</button>
-      </div>
+      
       <script type="text/javascript" src="app.js"></script>
   </body>
 </html>

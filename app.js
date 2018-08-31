@@ -83,11 +83,12 @@ function createPC(socketId, isOffer) {
     };
     dataChannel.onmessage = function (event) {
       var content = document.getElementById('text-room-content');
-      content.innerHTML = content.innerHTML + '<p>' + socketId + ': ' + event.data + '</p>';
+      var messageBlock = '<div class="chat-container"><p style="text-align: right"><span class="in-coming-msg">'  + socketId + ': ' + event.data + '</span></p></div>'
+      content.innerHTML = content.innerHTML + messageBlock;
     };
     dataChannel.onopen = function () {
       var textRoom = document.getElementById('text-room');
-      textRoom.style.display = 'block';
+      textRoom.style.display = 'inline-block';
     };
     dataChannel.onclose = function () {
       console.log("dataChannel.onclose");
@@ -150,12 +151,15 @@ function press() {
     document.getElementById('call-btn').disabled = true;
 }
 function textRoomPress() {
+  console.log(socket);
   var text = document.getElementById('text-room-input').value;
   if (text == "") {
     alert('Enter something');
   } else {
     document.getElementById('text-room-input').value = '';
-    
+    var content = document.getElementById('text-room-content');
+    var messageBlock = '<div class="chat-container"><p><span class="out-going-msg">'  + 'Me' + ': ' + text + '</span></p></div>'
+    content.innerHTML = content.innerHTML + messageBlock;
     for (var key in pcPeers) {
       var pc = pcPeers[key];
       pc.textDataChannel.send(text);
