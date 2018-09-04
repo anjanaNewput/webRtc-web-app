@@ -1,4 +1,5 @@
 var socket = io();
+var currentUser;
 var RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection || window.msRTCPeerConnection;
 var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription || window.msRTCSessionDescription;
 navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia;
@@ -157,16 +158,17 @@ function press() {
     document.getElementById('call-btn').disabled = true;
 }
 function textRoomPress() {
-  console.log(socket);
+  socket.emit('typing', null);
   var text = document.getElementById('text-room-input').value;
   if (text == "") {
     alert('Enter something');
   } else {
     document.getElementById('text-room-input').value = '';
     var content = document.getElementById('text-room-content');
-    var messageBlock = '<div class="chat-container"><p><span class="out-going-msg">'  + 'Me' + ': ' + text + '</span></p></div>'
+    var messageBlock = '<div class="chat-container"><p><span class="out-going-msg">'  + currentUser + ': ' + text + '</span></p></div>'
     content.innerHTML = content.innerHTML + messageBlock;
     content.scrollTop = content.scrollHeight;
+    console.log(socket);
     for (var key in pcPeers) {
       var pc = pcPeers[key];
       pc.textDataChannel.send(text);
@@ -177,3 +179,24 @@ function textRoomPress() {
 function clearChat() {
   document.getElementById('text-room-content').innerHTML = "";
 }
+
+function typing() {
+  socket.emit('typing', currentUser);
+}
+function onBlur() {
+  socket.emit('typing', null);
+}
+$(window).on('load',function(){
+  $('#myModal').modal('show');
+});
+function closeModal() {
+  currentUser = document.getElementById('user-name').value;
+}
+
+socket.on('typing', function(data){
+  if(data) {
+    document.getElementById('typing-span').innerHTML = data + ' is typing...';
+  } else {
+    document.getElementById('typing-span').innerHTML = '';
+  }
+});

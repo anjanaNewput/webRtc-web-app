@@ -46,7 +46,6 @@ function socketIdsInRoom(name) {
 }
 
 io.on('connection', function(socket){
-    console.log('inside connection');
   socket.on('disconnect', function(){
     if (socket.room) {
       var room = socket.room;
@@ -55,18 +54,20 @@ io.on('connection', function(socket){
     }
   });
 
+  socket.on('typing', function(data){
+    socket.broadcast.emit('typing', data);
+  });
+
   socket.on('join', function(name, callback){
-      console.log('inside join')
-    console.log('join', name);
     var socketIds = socketIdsInRoom(name);
     callback(socketIds);
     socket.join(name);
     socket.room = name;
+    socket.username = data;
   });
 
 
   socket.on('exchange', function(data){
-    console.log('exchange', data);
     data.from = socket.id;
     var to = io.sockets.connected[data.to];
     to.emit('exchange', data);
