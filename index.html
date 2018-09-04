@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>WebRTC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -10,29 +11,42 @@
       body {
         background-color: burlywood;
       }
-      .video-block {
+      /* .video-block {
         display: inline;
         margin: 70px 20px;
-      }
+      } */
       #self-view {
-        height: 300px;
+        height: 150px;
       }
       .chat-container {
         padding: 5px 10px;
         margin: 10px 0;
+        
       }
       .chat-container p {
         margin: 0;
       } 
       .in-coming-msg {
-        background-color: #ddd;;
+        background-color: #ddd;
         border-radius: 3px;
         padding: 5px;
       }
       .out-going-msg {
         background-color: #f1f1f1;
+        color: #000;
         border-radius: 3px;
         padding: 5px;
+      }
+      .content {
+        position: fixed;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        width: 100%;
+        padding: 20px;
+      }
+      #text-room-content {
+        height: 200px;
+        overflow: scroll;
       }
 
       /* Clear floats */
@@ -45,28 +59,32 @@
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
-      <div id="text-room" style="display: none;" class="col-md-3">
-          <div id="text-room-content"></div>
-          <div class="col-md-10">
-              <input id="text-room-input" class="form-control">
-          <!-- </div> -->
-          <!-- <div class="col-md-2"> -->
-              <span class="btn btn-primary" onclick="textRoomPress();">Send</span>
-          </div>
+      <div id="remote-view-container" class="video-block"></div>
+      <div class="content">
+            <div class="col-md-5">
+              <div class="video-block"><video autoplay id="self-view"></video></div>
+              <div>
+              <!-- <button id="leave-btn" class="btn btn-primary" onclick="press();"></button> -->
+                <button id="call-btn" class="btn btn-primary" onclick="press();">Call</button>
+                <button id="leave-btn" class="btn btn-danger" onclick="callDisconnect();">Cancel</button>
+              </div>
+            </div>
+            <div class="col-md-7">
+                <div id="text-room-content" class="row"></div>
+                <div class="row">
+                    <div class="col-xs-6" style="padding: 0;">
+                        <input id="text-room-input" class="form-control">
+                      </div>
+                      <div class="col-xs-2 col-sm-1" style="padding: 0;">
+                        <span class="btn btn-primary" onclick="textRoomPress();">Send</span>
+                    </div>
+                    <div class="col-xs-2">
+                      <span class="btn btn-primary" onclick="clearChat();">Clear</span>
+                    </div>
+                </div>
+            </div>
       </div>
-      <div class="col-md-9">
-        <div class="video-block"><video id="self-view" autoplay></video></div>
-        <div id="remote-view-container" class="video-block"></div>
-      </div>
-      <div style="clear: both"></div>
-      <div>
-          <div style="float:left;">
-              <button id="leave-btn" class="btn btn-primary" onclick="callDisconnect();">leave</button>
-          </div>
-          <div style="float:right;">
-            <button id="call-btn" class="btn btn-primary" onclick="press();">Call</button>
-          </div>
-      </div>
+      
       
       <script type="text/javascript" src="app.js"></script>
   </body>

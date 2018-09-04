@@ -57,7 +57,13 @@ function createPC(socketId, isOffer) {
 
   pc.onaddstream = function (event) {
     var element = document.createElement('video');
-    element.style.height = '300px';
+    // element.style.height = '100px';
+    // element.style.width = '150x';
+    element.style.position = 'fixed';
+    element.style.right = 0;
+    element.style.bottom = 0;
+    element.style.minWidth = '100%'; 
+    element.style.minHeight = '100%';
     element.id = "remoteView" + socketId;
     element.autoplay = 'autoplay';
     element.src = URL.createObjectURL(event.stream);
@@ -85,10 +91,10 @@ function createPC(socketId, isOffer) {
       var content = document.getElementById('text-room-content');
       var messageBlock = '<div class="chat-container"><p style="text-align: right"><span class="in-coming-msg">'  + socketId + ': ' + event.data + '</span></p></div>'
       content.innerHTML = content.innerHTML + messageBlock;
+      content.scrollTop = content.scrollHeight;
     };
     dataChannel.onopen = function () {
       var textRoom = document.getElementById('text-room');
-      textRoom.style.display = 'inline-block';
     };
     dataChannel.onclose = function () {
       console.log("dataChannel.onclose");
@@ -160,9 +166,14 @@ function textRoomPress() {
     var content = document.getElementById('text-room-content');
     var messageBlock = '<div class="chat-container"><p><span class="out-going-msg">'  + 'Me' + ': ' + text + '</span></p></div>'
     content.innerHTML = content.innerHTML + messageBlock;
+    content.scrollTop = content.scrollHeight;
     for (var key in pcPeers) {
       var pc = pcPeers[key];
       pc.textDataChannel.send(text);
     }
   }
+}
+
+function clearChat() {
+  document.getElementById('text-room-content').innerHTML = "";
 }
