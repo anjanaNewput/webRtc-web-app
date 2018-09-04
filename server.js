@@ -63,7 +63,6 @@ io.on('connection', function(socket){
     callback(socketIds);
     socket.join(name);
     socket.room = name;
-    socket.username = data;
   });
 
 
