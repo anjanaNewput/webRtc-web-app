@@ -11,10 +11,7 @@
       body {
         background-color: burlywood;
       }
-      /* .video-block {
-        display: inline;
-        margin: 70px 20px;
-      } */
+     
       #self-view {
         height: 150px;
       }
@@ -40,13 +37,13 @@
       .content {
         position: fixed;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
+        /* background: rgba(0, 0, 0, 0.5); */
         width: 100%;
         padding: 20px;
         color: #ffffff;
       }
       #text-room-content {
-        height: 200px;
+        max-height: 200px;
         overflow: scroll;
       }
 
@@ -55,6 +52,10 @@
           content: "";
           clear: both;
           display: table;
+      }
+
+      #chat-block{
+        display:none;
       }
     </style>
     <script src="/socket.io/socket.io.js"></script>
@@ -84,12 +85,13 @@
             <div class="col-md-5">
               <div class="video-block"><video autoplay id="self-view"></video></div>
               <div>
-              <!-- <button id="leave-btn" class="btn btn-primary" onclick="press();"></button> -->
-                <button id="call-btn" class="btn btn-primary" onclick="press();">Call</button>
+                <button id="call-btn" class="btn btn-primary" onclick="call();"><span class="glyphicon glyphicon-earphone"></span></button>
+                <button id="video-btn" class="btn btn-primary" onclick="video();"><span class="glyphicon glyphicon-facetime-video"></span></button>
+                <button id="chat-btn" class="btn btn-primary" onclick="chat()";"><span class="glyphicon glyphicon-comment"></span></button>
                 <button id="leave-btn" class="btn btn-danger" onclick="callDisconnect();">Cancel</button>
               </div>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-7" id="chat-block">
                 <div id="text-room-content" class="row"></div>
                 <div class="row">
                     <div class="col-xs-6" style="padding: 0;">

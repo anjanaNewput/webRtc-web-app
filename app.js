@@ -10,11 +10,14 @@ var pcPeers = {};
 var selfView = document.getElementById("self-view");
 var remoteViewContainer = document.getElementById("remote-view-container");
 var localStream;
-function getLocalStream() {
-  navigator.getUserMedia({ "audio": true, "video": true }, function (stream) {
+function getLocalStream(media) {
+  console.log(media)
+  navigator.getUserMedia(media, function (stream) {
+    console.log(stream);
     localStream = stream;
     selfView.src = URL.createObjectURL(stream);
     selfView.muted = true;
+    join('test');
   }, logError);
 }
 function join(roomID) {
@@ -58,19 +61,19 @@ function createPC(socketId, isOffer) {
 
   pc.onaddstream = function (event) {
     var element = document.createElement('video');
-    // element.style.height = '100px';
-    // element.style.width = '150x';
-    element.style.position = 'fixed';
-    element.style.right = 0;
-    element.style.bottom = 0;
-    element.style.minWidth = '100%'; 
-    element.style.minHeight = '100%';
+    var childElements = remoteViewContainer.childElementCount + 1;
     element.id = "remoteView" + socketId;
     element.autoplay = 'autoplay';
     element.src = URL.createObjectURL(event.stream);
     remoteViewContainer.appendChild(element);
+    $('#remote-view-container').children().each(function() {
+      console.log(this);
+      this.style.width = `${100/childElements}%`; 
+      this.style.height = `${100/childElements}%`;
+    })
+    
   };
-
+  console.log(localStream);
   pc.addStream(localStream);
   
 
@@ -89,6 +92,7 @@ function createPC(socketId, isOffer) {
       console.log("dataChannel.onerror", error);
     };
     dataChannel.onmessage = function (event) {
+      document.getElementById('chat-block').style.display = 'block'
       var content = document.getElementById('text-room-content');
       var messageBlock = '<div class="chat-container"><p style="text-align: right"><span class="in-coming-msg">'  + socketId + ': ' + event.data + '</span></p></div>'
       content.innerHTML = content.innerHTML + messageBlock;
@@ -141,7 +145,7 @@ socket.on('leave', function(socketId){
   leave(socketId);
 });
 socket.on('connect', function(data) {
-  getLocalStream();
+  //getLocalStream();
 });
 function logError(error) {
   console.log("logError", error);
@@ -149,13 +153,28 @@ function logError(error) {
 
 function callDisconnect () {
   document.getElementById('call-btn').disabled = false;
+  document.getElementById('video-btn').disabled = false;
   document.getElementById('leave-btn').disabled = true;
   socket.close();
   location.reload();
 }
-function press() {
-    join('test');
-    document.getElementById('call-btn').disabled = true;
+function video() {
+    document.getElementById('video-btn').disabled = true;
+    getLocalStream({video:true, audio:true});
+}
+
+function call() {
+  document.getElementById('call-btn').disabled = true;
+  getLocalStream({audio: true, video:false})
+}
+
+function chat() {
+  if(document.getElementById('chat-block').style.display == 'none') {
+    document.getElementById('chat-block').style.display = 'block';
+  } else {
+    document.getElementById('chat-block').style.display = 'none';
+  }
+  
 }
 function textRoomPress() {
   socket.emit('typing', null);
