@@ -31,6 +31,9 @@ server.listen(serverPort, function(){
 app.get('/app.js', function(req, res) {
     res.sendFile(__dirname + '/app.js');
 });
+app.get('/user_profile.png', function(req, res) {
+  res.sendFile(__dirname + '/user_profile.png');
+});
 
 function socketIdsInRoom(name) {
   var socketIds = io.nsps['/'].adapter.rooms[name];
@@ -63,6 +66,10 @@ io.on('connection', function(socket){
     callback(socketIds);
     socket.join(name);
     socket.room = name;
+  });
+
+  socket.on('call-started', function(data) {
+    socket.broadcast.emit('notify', data.currentUser);
   });
 
 

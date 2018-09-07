@@ -37,7 +37,6 @@
       .content {
         position: fixed;
         bottom: 0;
-        /* background: rgba(0, 0, 0, 0.5); */
         width: 100%;
         padding: 20px;
         color: #ffffff;
@@ -57,6 +56,18 @@
       #chat-block{
         display:none;
       }
+      #audio-video {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: none;
+      }
+      .user-profile {
+        width: 100%;
+        display: none;
+      }
     </style>
     <script src="/socket.io/socket.io.js"></script>
   </head>
@@ -74,13 +85,14 @@
                   <div><input class="form-control" id="user-name" type="text" placeholder="Enter you name"/></div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeModal()">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeModal()">Ok</button>
               </div>
             </div>
             
           </div>
         </div>
       <div id="remote-view-container" class="video-block"></div>
+      <div id="audio-view"><img src="/user_profile.png" class="user-profile"></div>
       <div class="content">
             <div class="col-md-5">
               <div class="video-block"><video autoplay id="self-view"></video></div>

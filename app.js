@@ -17,6 +17,7 @@ function getLocalStream(media) {
     localStream = stream;
     selfView.src = URL.createObjectURL(stream);
     selfView.muted = true;
+    socket.emit('call-started', {'currentUser' : currentUser});
     join('test');
   }, logError);
 }
@@ -39,6 +40,7 @@ function createPC(socketId, isOffer) {
   function createOffer() {
     pc.createOffer(function(desc) {
       pc.setLocalDescription(desc, function () {
+        
         socket.emit('exchange', {'to': socketId, 'sdp': pc.localDescription });
       }, logError);
     }, logError);
@@ -60,6 +62,7 @@ function createPC(socketId, isOffer) {
   };
 
   pc.onaddstream = function (event) {
+    console.log(event.stream)
     var element = document.createElement('video');
     var childElements = remoteViewContainer.childElementCount + 1;
     element.id = "remoteView" + socketId;
@@ -67,13 +70,12 @@ function createPC(socketId, isOffer) {
     element.src = URL.createObjectURL(event.stream);
     remoteViewContainer.appendChild(element);
     $('#remote-view-container').children().each(function() {
-      console.log(this);
       this.style.width = `${100/childElements}%`; 
       this.style.height = `${100/childElements}%`;
     })
     
   };
-  console.log(localStream);
+
   pc.addStream(localStream);
   
 
@@ -155,18 +157,54 @@ function callDisconnect () {
   document.getElementById('call-btn').disabled = false;
   document.getElementById('video-btn').disabled = false;
   document.getElementById('leave-btn').disabled = true;
+  remoteViewContainer.style.display = 'block';
+  document.getElementsByClassName('user-profile')[0].style.display = 'none';
   socket.close();
   location.reload();
 }
 function video() {
     document.getElementById('video-btn').disabled = true;
+    document.getElementsByClassName('user-profile')[0].style.display = 'none';
     getLocalStream({video:true, audio:true});
+    //socket.emit('call-started', currentUser);
 }
 
 function call() {
   document.getElementById('call-btn').disabled = true;
+  remoteViewContainer.style.display = 'none';
+  document.getElementsByClassName('user-profile')[0].style.display = 'block';
   getLocalStream({audio: true, video:false})
+  //socket.emit('call-started', currentUser);
 }
+
+socket.on('notify', function(user) {
+  var options = {
+    body: 'Do want to join?',
+    dir : "ltr"
+  };
+  if (!("Notification" in window)) {
+    alert("This browser does not support desktop notification");
+  }
+
+  else if (Notification.permission === "granted") {
+    var notification = new Notification(user+ " wants to start call",options);
+  }
+  else if (Notification.permission !== 'denied') {
+    Notification.requestPermission(function (permission) {
+      if (!('permission' in Notification)) {
+        Notification.permission = permission;
+      }
+      if (permission === "granted") {
+        var notification = new Notification(user + " wants to start call", options);
+      }
+    });
+    Notification.onclick = function(event) {
+      event.preventDefault(); // prevent the browser from focusing the Notification's tab
+      video();
+    }
+  }
+
+})
 
 function chat() {
   if(document.getElementById('chat-block').style.display == 'none') {
@@ -187,7 +225,6 @@ function textRoomPress() {
     var messageBlock = '<div class="chat-container"><p><span class="out-going-msg">'  + currentUser + ': ' + text + '</span></p></div>'
     content.innerHTML = content.innerHTML + messageBlock;
     content.scrollTop = content.scrollHeight;
-    console.log(socket);
     for (var key in pcPeers) {
       var pc = pcPeers[key];
       pc.textDataChannel.send(text);
@@ -207,6 +244,11 @@ function onBlur() {
 }
 $(window).on('load',function(){
   $('#myModal').modal('show');
+  Notification.requestPermission(function (permission) {
+    if (!('permission' in Notification)) {
+      Notification.permission = permission;
+    }
+  });
 });
 function closeModal() {
   currentUser = document.getElementById('user-name').value;
