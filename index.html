@@ -18,8 +18,15 @@
       .chat-container {
         padding: 5px 10px;
         margin: 10px 0;
-        
       }
+      /* video{
+        -moz-transform:scale(1.5);
+        -webkit-transform:scale(1.5);
+        -o-transform:scale(1.5);
+        -ms-transform:scale(1.5);
+        transform:scale(1.5);
+      } */
+
       .chat-container p {
         margin: 0;
       } 
@@ -95,7 +102,7 @@
       <div id="audio-view"><img src="/user_profile.png" class="user-profile"></div>
       <div class="content">
             <div class="col-md-5">
-              <div class="video-block"><video autoplay id="self-view"></video></div>
+              <div class="video-block" onclick="changePosition()"><video autoplay id="self-view"></video></div>
               <div>
                 <button id="call-btn" class="btn btn-primary" onclick="call();"><span class="glyphicon glyphicon-earphone"></span></button>
                 <button id="video-btn" class="btn btn-primary" onclick="video();"><span class="glyphicon glyphicon-facetime-video"></span></button>

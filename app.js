@@ -261,3 +261,10 @@ socket.on('typing', function(data){
     document.getElementById('typing-span').innerHTML = '';
   }
 });
+
+function changePosition() {
+  var myVideoUrl = document.getElementById('self-view').src;
+  var remoteVideoUrl =  remoteViewContainer.getElementsByTagName('video')[0].src;
+  document.getElementById('self-view').src = remoteVideoUrl;
+  remoteViewContainer.getElementsByTagName('video')[0].src = myVideoUrl;
+}
