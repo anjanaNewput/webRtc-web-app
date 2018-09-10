@@ -5,8 +5,9 @@ var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSession
 navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia;
 
 var configuration = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
-
+var zoomIndex = 1;
 var pcPeers = {};
+var lastSliderValue = 0;
 var selfView = document.getElementById("self-view");
 var remoteViewContainer = document.getElementById("remote-view-container");
 var localStream;
@@ -147,8 +148,9 @@ socket.on('leave', function(socketId){
   leave(socketId);
 });
 socket.on('connect', function(data) {
-  //getLocalStream();
 });
+
+
 function logError(error) {
   console.log("logError", error);
 }
@@ -162,6 +164,7 @@ function callDisconnect () {
   socket.close();
   location.reload();
 }
+
 function video() {
     document.getElementById('video-btn').disabled = true;
     document.getElementsByClassName('user-profile')[0].style.display = 'none';
@@ -214,6 +217,8 @@ function chat() {
   }
   
 }
+
+
 function textRoomPress() {
   socket.emit('typing', null);
   var text = document.getElementById('text-room-input').value;
@@ -239,9 +244,13 @@ function clearChat() {
 function typing() {
   socket.emit('typing', currentUser);
 }
+
+
 function onBlur() {
   socket.emit('typing', null);
 }
+
+
 $(window).on('load',function(){
   $('#myModal').modal('show');
   Notification.requestPermission(function (permission) {
@@ -250,6 +259,8 @@ $(window).on('load',function(){
     }
   });
 });
+
+
 function closeModal() {
   currentUser = document.getElementById('user-name').value;
 }
@@ -268,3 +279,13 @@ function changePosition() {
   document.getElementById('self-view').src = remoteVideoUrl;
   remoteViewContainer.getElementsByTagName('video')[0].src = myVideoUrl;
 }
+
+function zoom(event) {
+  if(event.target.value > lastSliderValue) {
+    zoomIndex = zoomIndex + 0.1;
+  } else {
+    zoomIndex = zoomIndex - 0.1;
+  }
+  remoteViewContainer.getElementsByTagName('video')[0].style.transform = 'scale('+zoomIndex+')';
+  lastSliderValue = event.target.value
+};
