@@ -95,9 +95,10 @@ function createPC(socketId, isOffer) {
       console.log("dataChannel.onerror", error);
     };
     dataChannel.onmessage = function (event) {
+      var message = JSON.parse(event.data);
       document.getElementById('chat-block').style.display = 'block'
       var content = document.getElementById('text-room-content');
-      var messageBlock = '<div class="chat-container"><p style="text-align: right"><span class="in-coming-msg">'  + socketId + ': ' + event.data + '</span></p></div>'
+      var messageBlock = '<div class="chat-container"><p style="text-align: right"><span class="in-coming-msg">'  + message.name + ': ' + message.text + '</span></p></div>'
       content.innerHTML = content.innerHTML + messageBlock;
       content.scrollTop = content.scrollHeight;
     };
@@ -201,10 +202,6 @@ socket.on('notify', function(user) {
         var notification = new Notification(user + " wants to start call", options);
       }
     });
-    Notification.onclick = function(event) {
-      event.preventDefault(); // prevent the browser from focusing the Notification's tab
-      video();
-    }
   }
 
 })
@@ -232,7 +229,7 @@ function textRoomPress() {
     content.scrollTop = content.scrollHeight;
     for (var key in pcPeers) {
       var pc = pcPeers[key];
-      pc.textDataChannel.send(text);
+      pc.textDataChannel.send(JSON.stringify({name: currentUser, text: text}));
     }
   }
 }
